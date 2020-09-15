@@ -9,6 +9,7 @@ namespace App\Command;
 
 use App\Entity\Movie;
 use Doctrine\ORM\EntityManagerInterface;
+use DOMDocument;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
@@ -132,6 +133,7 @@ class FetchDataCommand extends Command
             $trailer = $this->getMovie((string) $item->title)
                 ->setTitle((string) $item->title)
                 ->setDescription((string) $item->description)
+                ->setImage( $this->getImage($item))
                 ->setLink((string) $item->link)
                 ->setPubDate($this->parseDate((string) $item->pubDate))
             ;
@@ -141,7 +143,14 @@ class FetchDataCommand extends Command
 
         $this->doctrine->flush();
     }
-
+    // вытаскиваем из content:encoded img
+    protected function getImage(object $data): string{
+        $content = $data->children("content", true);
+        $dom = new DOMDocument();
+        $dom->loadHTML(str_replace(' & ', ' &amp; ', (string)$content));
+        $img = $dom->getElementsByTagName('img')->item(0)->getAttribute('src');
+        return $img;
+    }
     /**
      * @param string $date
      *
