@@ -1,0 +1,19 @@
+{% extends 'main.html.twig' %}
+
+{% block title %}{{ trailer['title'] }}{% endblock %}
+
+{% block content %}
+    <div class="card text-center">
+        <div class="card-header">
+            {{ trailer['title'] }}
+        </div>
+        <div class="card-body">
+            <img src="{{ trailer['image'] }}" alt="">
+            <p class="card-text">{{ trailer['description'] }}</p>
+            <a href="{{ trailer['link'] }}" class="btn btn-primary">Посетить страницу</a>
+        </div>
+        <div class="card-footer text-muted">
+            <a href="/" class="btn btn-primary">Возвратиться на начальную</a>
+        </div>
+    </div>
+{% endblock %}

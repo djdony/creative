@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Movie;
+use App\Repository\MovieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -71,6 +72,30 @@ class HomeController
         return $response;
     }
 
+
+    public function detail(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $id =$request->getAttribute('id');
+        $trailer = $this->em->find(Movie::class, $id);
+        $itemdata = [
+            'link' => $trailer->getLink(),
+            'description' => $trailer->getDescription(),
+            'title' => $trailer->getTitle(),
+            'image' => $trailer->getImage(),
+        ];
+        try {
+            $data = $this->twig->render('home/detail.html.twig', [
+                'trailer' => $itemdata,
+            ]);
+        } catch (\Exception $e) {
+            throw new HttpBadRequestException($request, $e->getMessage(), $e);
+        }
+
+        $response->getBody()->write($data);
+
+        return $response;
+    }
+
     /**
      * @return Collection
      */
@@ -81,4 +106,5 @@ class HomeController
 
         return new ArrayCollection($data);
     }
+
 }
