@@ -117,7 +117,8 @@ class FetchDataCommand extends Command
      *
      * @throws \Exception
      */
-    protected function processXml(string $data): void
+    // $limit добавлен для лимитирования на 10 записей.
+    protected function processXml(string $data, int $limit=10): void
     {
         $xml = (new \SimpleXMLElement($data))->children();
 //        $namespace = $xml->getNamespaces(true)['content'];
@@ -127,6 +128,7 @@ class FetchDataCommand extends Command
             throw new RuntimeException('Could not find \'channel\' element in feed');
         }
         foreach ($xml->channel->item as $item) {
+            if(!$limit--)  break; //останавливаем цикл при достижении limita -1
             $trailer = $this->getMovie((string) $item->title)
                 ->setTitle((string) $item->title)
                 ->setDescription((string) $item->description)
